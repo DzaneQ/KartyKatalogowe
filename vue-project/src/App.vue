@@ -14,18 +14,10 @@ interface ProductData {
 }
 
 const defaultProduct: ProductData = {
-  logoText: 'YOUR BRAND',
-  productName: 'Product Name',
-  subtitle: 'Product catalogue template',
-  specifications: [
-    { key: 'Model', value: 'P-1000' },
-    { key: 'Type', value: 'Industrial' },
-    { key: 'Material', value: 'Steel / Aluminium' },
-    { key: 'Weight', value: '4.8 kg' },
-    { key: 'Dimensions', value: '320 x 180 x 120 mm' },
-    { key: 'Power', value: '24 V / 500 W' },
-    { key: 'Warranty', value: '24 months' },
-  ],
+  logoText: 'Logo',
+  productName: 'Tytuł',
+  subtitle: 'Podtytuł',
+  specifications: [],
 }
 
 const product = reactive<ProductData>({ ...defaultProduct, specifications: [...defaultProduct.specifications] })
@@ -81,6 +73,32 @@ onMounted(() => {
   }
 })
 
+const chemicalSubscripts: Record<string, string> = {
+  '0': '₀',
+  '1': '₁',
+  '2': '₂',
+  '3': '₃',
+  '4': '₄',
+  '5': '₅',
+  '6': '₆',
+  '7': '₇',
+  '8': '₈',
+  '9': '₉',
+}
+
+const formatChemicalValue = (value: string): string => {
+  if (!value) {
+    return value
+  }
+
+  return value.replace(/_([0-9]+)/g, (_, digits: string) =>
+    digits
+      .split('')
+      .map((digit) => chemicalSubscripts[digit] ?? digit)
+      .join(''),
+  )
+}
+
 const normalizeSpecifications = (input: unknown): ProductSpecRow[] => {
   if (Array.isArray(input)) {
     return input
@@ -88,7 +106,8 @@ const normalizeSpecifications = (input: unknown): ProductSpecRow[] => {
         if (typeof entry === 'object' && entry !== null) {
           const row = entry as Record<string, unknown>
           const key = typeof row.key === 'string' ? row.key : typeof row.label === 'string' ? row.label : ''
-          const value = typeof row.value === 'string' ? row.value : typeof row.val === 'string' ? row.val : String(row.value ?? '')
+          const rawValue = typeof row.value === 'string' ? row.value : typeof row.val === 'string' ? row.val : String(row.value ?? '')
+          const value = formatChemicalValue(rawValue)
           return key ? { key, value } : null
         }
 
@@ -100,7 +119,7 @@ const normalizeSpecifications = (input: unknown): ProductSpecRow[] => {
   if (input && typeof input === 'object') {
     return Object.entries(input as Record<string, unknown>).map(([key, value]) => ({
       key,
-      value: typeof value === 'string' ? value : String(value ?? ''),
+      value: formatChemicalValue(typeof value === 'string' ? value : String(value ?? '')),
     }))
   }
 
@@ -149,22 +168,7 @@ const onLogoUpload = (event: Event) => {
   logoPreview.value = URL.createObjectURL(file)
 }
 
-const onJsonUpload = async (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
 
-  try {
-    const text = await file.text()
-    const parsed = JSON.parse(text) as Record<string, unknown>
-    applyProductData(parsed)
-  } catch (error) {
-    console.error('Invalid JSON file', error)
-    alert('The JSON file is not valid. Please upload a valid product JSON file.')
-  } finally {
-    target.value = ''
-  }
-}
 </script>
 
 <template>
@@ -206,13 +210,11 @@ const onJsonUpload = async (event: Event) => {
           <p class="subtitle">{{ product.subtitle }}</p>
         </div>
 
-        <div class="json-actions">
-          <label class="upload-button upload-button-small accent">Load JSON
-            <input type="file" accept="application/json" @change="onJsonUpload" />
-          </label>
+        <div v-if="product.specifications.length" class="specifications-header">
+          Informacje techniczne:
         </div>
 
-        <div class="table-wrap">
+        <div v-if="product.specifications.length" class="table-wrap">
           <table>
             <tbody>
               <tr v-for="row in product.specifications" :key="`${row.key}-${row.value}`">
@@ -229,12 +231,10 @@ const onJsonUpload = async (event: Event) => {
 
 <style>
 :root {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
   color: #111827;
   background: #e5e7eb;
   line-height: 1.4;
-  font-weight: 400;
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -298,6 +298,7 @@ body {
   border: 1px solid #0f172a;
   background: rgba(255, 255, 255, 0.92);
   color: #0f172a;
+  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -424,20 +425,37 @@ body {
 
 h1 {
   margin: 0;
-  font-size: clamp(26px, 3vw, 40px);
-  line-height: 1.1;
-  letter-spacing: -0.04em;
-  color: #0f172a;
+  font-family: "Futura Bold Condensed", sans-serif;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+  color: #111827;
 }
 
 .subtitle {
   margin: 8px 0 0;
-  color: #475569;
-  font-size: 15px;
+  font-family: "Futura Bold Condensed", sans-serif;
+  color: #ff0000;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.45;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
-.json-actions {
-  margin-bottom: 16px;
+.specifications-header {
+  margin: 16px 0 10px;
+  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 .table-wrap {
@@ -449,6 +467,7 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
+  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
 }
 
 tr + tr {
@@ -456,23 +475,28 @@ tr + tr {
 }
 
 th, td {
-  padding: 10px 12px;
+  padding: 8px 10px;
   text-align: left;
   vertical-align: top;
-  font-size: 13px;
+  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
+  font-size: 10.5px;
+  line-height: 1.35;
 }
 
 th {
-  width: 42%;
+  width: 60%;
   color: #1f2937;
   font-weight: 700;
   background: #f8fafc;
   border-right: 1px solid #e2e8f0;
+  text-align: left;
 }
 
 td {
+  width: 33.33%;
   color: #334155;
   font-weight: 500;
+  text-align: center;
 }
 
 @media (max-width: 780px) {
