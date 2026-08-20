@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 
 interface ProductSpecRow {
   key: string
@@ -24,11 +24,20 @@ const product = reactive<ProductData>({ ...defaultProduct, specifications: [...d
 const imagePreview = ref<string | null>(null)
 const logoPreview = ref<string | null>(null)
 const specImageUrls = ref<string[]>([])
+const certificateImageUrls = ref<string[]>([])
 const currentRouteHasResource = ref(false)
 const specImageAssets = import.meta.glob(
   '/public/resources/*/specImg/*.{png,jpg,jpeg,webp,gif,avif}',
   { eager: true, query: '?url', import: 'default' },
 ) as Record<string, string>
+const certificateImageAssets = import.meta.glob(
+  '/public/resources/*/certificates/*.{png,jpg,jpeg,webp,gif,avif}',
+  { eager: true, query: '?url', import: 'default' },
+) as Record<string, string>
+const certificateImageRows = computed(() => [
+  certificateImageUrls.value.slice(0, 4),
+  certificateImageUrls.value.slice(4),
+].filter((row) => row.length > 0))
 
 const resolveResourceFolder = (): string | null => {
   if (typeof window === 'undefined') {
@@ -67,6 +76,11 @@ const loadRouteProductData = async () => {
     const resourcePath = `/public${resourceFolder}/specImg/`
     specImageUrls.value = Object.entries(specImageAssets)
       .filter(([path]) => path.startsWith(resourcePath))
+      .sort(([firstPath], [secondPath]) => firstPath.localeCompare(secondPath))
+      .map(([, imageUrl]) => imageUrl)
+    const certificatePath = `/public${resourceFolder}/certificates/`
+    certificateImageUrls.value = Object.entries(certificateImageAssets)
+      .filter(([path]) => path.startsWith(certificatePath))
       .sort(([firstPath], [secondPath]) => firstPath.localeCompare(secondPath))
       .map(([, imageUrl]) => imageUrl)
   } catch (error) {
@@ -242,6 +256,17 @@ const onLogoUpload = (event: Event) => {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div v-if="certificateImageUrls.length" class="certificate-image-row" aria-label="Product certificates">
+          <div v-for="(imageRow, rowIndex) in certificateImageRows" :key="rowIndex" class="certificate-image-line">
+            <img
+              v-for="imageUrl in imageRow"
+              :key="imageUrl"
+              :src="imageUrl"
+              alt=""
+            />
+          </div>
         </div>
       </aside>
     </article>
@@ -480,6 +505,35 @@ h1 {
   width: 100%;
   max-width: 31%;
   height: 72px;
+  object-fit: contain;
+}
+
+.certificate-image-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.certificate-image-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.certificate-image-line:first-child {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.certificate-image-line img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 58px;
   object-fit: contain;
 }
 
