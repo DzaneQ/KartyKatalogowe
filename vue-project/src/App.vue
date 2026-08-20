@@ -23,7 +23,12 @@ const defaultProduct: ProductData = {
 const product = reactive<ProductData>({ ...defaultProduct, specifications: [...defaultProduct.specifications] })
 const imagePreview = ref<string | null>(null)
 const logoPreview = ref<string | null>(null)
+const specImageUrls = ref<string[]>([])
 const currentRouteHasResource = ref(false)
+const specImageAssets = import.meta.glob(
+  '/public/resources/*/specImg/*.{png,jpg,jpeg,webp,gif,avif}',
+  { eager: true, query: '?url', import: 'default' },
+) as Record<string, string>
 
 const resolveResourceFolder = (): string | null => {
   if (typeof window === 'undefined') {
@@ -59,6 +64,11 @@ const loadRouteProductData = async () => {
     applyProductData(json)
     imagePreview.value = `${resourceFolder}/preview.png`
     logoPreview.value = '/resources/logo.jpg'
+    const resourcePath = `/public${resourceFolder}/specImg/`
+    specImageUrls.value = Object.entries(specImageAssets)
+      .filter(([path]) => path.startsWith(resourcePath))
+      .sort(([firstPath], [secondPath]) => firstPath.localeCompare(secondPath))
+      .map(([, imageUrl]) => imageUrl)
   } catch (error) {
     console.error('Failed to load route product data:', error)
   }
@@ -208,6 +218,15 @@ const onLogoUpload = (event: Event) => {
         <div class="meta-block">
           <h1>{{ product.productName }}</h1>
           <p class="subtitle">{{ product.subtitle }}</p>
+        </div>
+
+        <div v-if="specImageUrls.length" class="spec-image-row" aria-label="Product detail images">
+          <img
+            v-for="imageUrl in specImageUrls"
+            :key="imageUrl"
+            :src="imageUrl"
+            alt=""
+          />
         </div>
 
         <div v-if="product.specifications.length" class="specifications-header">
@@ -446,6 +465,22 @@ h1 {
   letter-spacing: 0.12em;
   text-align: center;
   text-transform: uppercase;
+}
+
+.spec-image-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.spec-image-row img {
+  display: block;
+  width: 100%;
+  max-width: 31%;
+  height: 72px;
+  object-fit: contain;
 }
 
 .specifications-header {
