@@ -625,8 +625,84 @@ td {
 
   .a4-card {
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
+    min-height: 0;
+    grid-template-columns: 1.15fr 1fr;
     box-shadow: none;
+    overflow: hidden;
+  }
+
+  .image-panel,
+  .image-frame,
+  .image-placeholder {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .image-frame img {
+    transform: none;
+  }
+
+  .info-panel {
+    min-height: 0;
+    padding: 16px 16px 12px;
+  }
+
+  .brand-header {
+    gap: 10px;
+    padding-bottom: 14px;
+  }
+
+  .logo-box {
+    min-height: 58px;
+    font-size: 15px;
+    padding: 6px 8px;
+  }
+
+  .meta-block {
+    padding: 18px 0 8px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    margin-top: 6px;
+    font-size: 13px;
+  }
+
+  .spec-image-row {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .spec-image-row img {
+    height: 58px;
+  }
+
+  .specifications-header {
+    margin: 12px 0 8px;
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 4px 6px;
+    font-size: 9px;
+    line-height: 1.2;
+  }
+
+  .certificate-image-row {
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .certificate-image-line {
+    gap: 6px;
+  }
+
+  .certificate-image-line img {
+    height: 42px;
   }
 }
 </style>
