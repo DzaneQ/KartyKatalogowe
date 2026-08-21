@@ -343,7 +343,6 @@ body {
   border: 1px solid #0f172a;
   background: rgba(255, 255, 255, 0.92);
   color: #0f172a;
-  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -472,7 +471,6 @@ body {
 
 h1 {
   margin: 0;
-  font-family: "Futura Bold Condensed", sans-serif;
   font-size: 34px;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -484,7 +482,6 @@ h1 {
 
 .subtitle {
   margin: 8px 0 0;
-  font-family: "Futura Bold Condensed", sans-serif;
   color: #ff0000;
   font-size: 26px;
   font-style: italic;
@@ -542,7 +539,6 @@ h1 {
 
 .specifications-header {
   margin: 16px 0 10px;
-  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
   color: #111827;
   font-size: 23px;
   font-weight: 800;
@@ -559,7 +555,6 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
 }
 
 tr + tr {
@@ -570,7 +565,6 @@ th, td {
   padding: 2px 8px;
   text-align: left;
   vertical-align: middle;
-  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
   font-size: 15px;
   line-height: 1.35;
 }
