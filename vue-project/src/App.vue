@@ -26,6 +26,7 @@ const imagePreview = ref<string | null>(null)
 const logoPreview = ref<string | null>(null)
 const specImageUrls = ref<string[]>([])
 const certificateImageUrls = ref<string[]>([])
+const phoneNumbers = ref<string[]>([])
 const currentRouteHasResource = ref(false)
 const specImageAssets = import.meta.glob(
   '/public/resources/*/specImg/*.{png,jpg,jpeg,webp,gif,avif}',
@@ -56,6 +57,23 @@ const resolveResourceFolder = (): string | null => {
   }
 
   return folderMatch[0]
+}
+
+const loadPhoneNumbers = async () => {
+  try {
+    const response = await fetch('/resources/phone_numbers.txt')
+    if (!response.ok) {
+      return
+    }
+
+    const text = await response.text()
+    phoneNumbers.value = text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+  } catch (error) {
+    console.error('Failed to load phone numbers:', error)
+  }
 }
 
 const loadRouteProductData = async () => {
@@ -92,6 +110,8 @@ const loadRouteProductData = async () => {
 onMounted(() => {
   const resourceFolder = resolveResourceFolder()
   currentRouteHasResource.value = Boolean(resourceFolder)
+
+  loadPhoneNumbers()
 
   if (resourceFolder) {
     loadRouteProductData()
@@ -269,6 +289,17 @@ const onLogoUpload = (event: Event) => {
             />
           </div>
         </div>
+
+        <div v-if="phoneNumbers.length" class="contact-block" aria-label="Phone numbers">
+          <div class="contact-row">
+            <template v-for="phone in phoneNumbers" :key="phone">
+              <div class="contact-item">
+                <img src="/resources/phone_icon.png" alt="Phone icon" />
+                <span>{{ phone }}</span>
+              </div>
+            </template>
+          </div>
+        </div>
       </aside>
     </article>
   </main>
@@ -276,7 +307,7 @@ const onLogoUpload = (event: Event) => {
 
 <style>
 :root {
-  font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
+  font-family: "Oswald Bold", "Arial Narrow", sans-serif;
   color: #111827;
   background: #e5e7eb;
   line-height: 1.4;
@@ -497,7 +528,7 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .spec-image-row img {
@@ -513,7 +544,7 @@ h1 {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 .certificate-image-line {
@@ -546,6 +577,38 @@ h1 {
   text-transform: none;
 }
 
+.contact-block {
+  margin: 8px 0 12px;
+  padding: 8px 4px;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #0f172a;
+  font-family: "Segoe UI", "Arial Narrow", sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+.contact-block img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .table-wrap {
   border: 1px solid #dfe7ee;
   overflow: hidden;
@@ -562,10 +625,10 @@ tr + tr {
 }
 
 th, td {
-  padding: 2px 8px;
+  padding: 3px 8px;
   text-align: left;
   vertical-align: middle;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.35;
 }
 
