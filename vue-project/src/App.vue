@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import "./fonts/fonts.css";
 
 interface ProductSpecRow {
   key: string
@@ -35,8 +36,8 @@ const certificateImageAssets = import.meta.glob(
   { eager: true, query: '?url', import: 'default' },
 ) as Record<string, string>
 const certificateImageRows = computed(() => [
-  certificateImageUrls.value.slice(0, 4),
-  certificateImageUrls.value.slice(4),
+  certificateImageUrls.value.slice(0, 5),
+  certificateImageUrls.value.slice(5),
 ].filter((row) => row.length > 0))
 
 const resolveResourceFolder = (): string | null => {
@@ -210,7 +211,7 @@ const onLogoUpload = (event: Event) => {
           <img :src="imagePreview" alt="Product preview" />
         </div>
         <div v-else class="image-placeholder">
-          <span>Image area</span>
+          <span>Zdjęcie</span>
         </div>
       </section>
 
@@ -423,7 +424,6 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding-bottom: 18px;
-  border-bottom: 2px solid #dfe7ee;
 }
 
 .logo-box {
@@ -456,6 +456,8 @@ body {
 
 .meta-block {
   padding: 24px 0 12px;
+  border: double;
+  background:white;
 }
 
 .eyebrow {
@@ -465,12 +467,13 @@ body {
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.92);
 }
 
 h1 {
   margin: 0;
   font-family: "Futura Bold Condensed", sans-serif;
-  font-size: 24px;
+  font-size: 34px;
   line-height: 1;
   letter-spacing: -0.02em;
   font-weight: bold;
@@ -483,7 +486,7 @@ h1 {
   margin: 8px 0 0;
   font-family: "Futura Bold Condensed", sans-serif;
   color: #ff0000;
-  font-size: 16px;
+  font-size: 26px;
   font-style: italic;
   line-height: 1.45;
   font-weight: 700;
@@ -541,7 +544,7 @@ h1 {
   margin: 16px 0 10px;
   font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
   color: #111827;
-  font-size: 13px;
+  font-size: 23px;
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: none;
@@ -564,20 +567,20 @@ tr + tr {
 }
 
 th, td {
-  padding: 8px 10px;
+  padding: 2px 8px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
   font-family: "Futura Bold Condensed", "Arial Narrow", sans-serif;
-  font-size: 10.5px;
+  font-size: 15px;
   line-height: 1.35;
 }
 
 th {
-  width: 60%;
+  width: 49%;
   color: #1f2937;
   font-weight: 700;
-  background: #f8fafc;
-  border-right: 1px solid #e2e8f0;
+  background: linear-gradient(180deg, #edf4fa 0%, #b9c1c9 100%);
+  border-right: 1px solid #dbe7f1;
   text-align: left;
 }
 
@@ -586,6 +589,7 @@ td {
   color: #334155;
   font-weight: 500;
   text-align: center;
+  background: rgba(255, 255, 255, 0.85);
 }
 
 @media (max-width: 780px) {
@@ -615,10 +619,6 @@ td {
     margin: 0;
   }
 
-  body {
-    background: #fff;
-  }
-
   .page-shell {
     padding: 0;
   }
@@ -630,79 +630,6 @@ td {
     grid-template-columns: 1.15fr 1fr;
     box-shadow: none;
     overflow: hidden;
-  }
-
-  .image-panel,
-  .image-frame,
-  .image-placeholder {
-    min-height: 0;
-    height: 100%;
-  }
-
-  .image-frame img {
-    transform: none;
-  }
-
-  .info-panel {
-    min-height: 0;
-    padding: 16px 16px 12px;
-  }
-
-  .brand-header {
-    gap: 10px;
-    padding-bottom: 14px;
-  }
-
-  .logo-box {
-    min-height: 58px;
-    font-size: 15px;
-    padding: 6px 8px;
-  }
-
-  .meta-block {
-    padding: 18px 0 8px;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
-
-  .subtitle {
-    margin-top: 6px;
-    font-size: 13px;
-  }
-
-  .spec-image-row {
-    gap: 6px;
-    margin-top: 8px;
-  }
-
-  .spec-image-row img {
-    height: 58px;
-  }
-
-  .specifications-header {
-    margin: 12px 0 8px;
-    font-size: 12px;
-  }
-
-  th, td {
-    padding: 4px 6px;
-    font-size: 9px;
-    line-height: 1.2;
-  }
-
-  .certificate-image-row {
-    gap: 6px;
-    margin-top: 10px;
-  }
-
-  .certificate-image-line {
-    gap: 6px;
-  }
-
-  .certificate-image-line img {
-    height: 42px;
   }
 }
 </style>
