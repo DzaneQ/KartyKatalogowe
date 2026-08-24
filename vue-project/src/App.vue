@@ -10,12 +10,14 @@ interface ProductSpecRow {
 interface ProductData {
   logoText: string
   productName: string
+  subtitle: string
   specifications: ProductSpecRow[]
 }
 
 const defaultProduct: ProductData = {
   logoText: 'Logo',
   productName: 'Tytuł',
+  subtitle: '',
   specifications: [],
 }
 
@@ -207,6 +209,10 @@ const applyProductData = (json: Record<string, unknown>) => {
     product.productName = json.productName
   }
 
+  if (typeof json.subtitle === 'string') {
+    product.subtitle = json.subtitle
+  }
+
   if ('specifications' in json) {
     const rows = normalizeSpecifications(json.specifications)
     if (rows.length > 0) {
@@ -255,6 +261,10 @@ const onLogoUpload = (event: Event) => {
         </div>
         <div v-else class="image-placeholder">
           <span>Zdjęcie</span>
+        </div>
+
+        <div v-if="product.subtitle" class="image-subtitle">
+          {{ product.subtitle }}
         </div>
       </section>
 
@@ -360,7 +370,11 @@ body {
 .a4-card {
   width: 210mm;
   min-height: 297mm;
-  background: #ffffff;
+  background-color: #ffffff;
+  background-image: url('./background.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
@@ -369,9 +383,10 @@ body {
 
 .image-panel {
   position: relative;
-  background: linear-gradient(180deg, #edf2f7 0%, #dfe7ec 100%);
+  background: transparent;
   padding: 0;
   display: flex;
+  flex-direction: column;
   align-items: stretch;
   justify-content: stretch;
   min-height: 100%;
@@ -431,8 +446,8 @@ body {
 .image-frame,
 .image-placeholder {
   width: 100%;
-  height: 100%;
-  min-height: 297mm;
+  flex: 1;
+  min-height: 0;
   display: grid;
   place-items: center;
   background: transparent;
@@ -442,7 +457,7 @@ body {
 
 .image-frame {
   overflow: hidden;
-  background: #f8fafc;
+  background: transparent;
 }
 
 .image-frame img {
@@ -462,10 +477,22 @@ body {
   text-transform: uppercase;
 }
 
+.image-subtitle {
+  flex-shrink: 0;
+  padding: 12px 16px 14px;
+  background: rgba(255, 255, 255, 0.60);
+  color: #000000;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  white-space: pre-line;
+}
+
 .info-panel {
   display: flex;
   flex-direction: column;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.85);
   padding: 20px 20px 16px;
 }
 
@@ -711,6 +738,7 @@ td {
   .image-frame,
   .image-placeholder {
     height: 260px;
+    flex: none;
   }
 }
 
