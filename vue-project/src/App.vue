@@ -371,7 +371,7 @@ body {
   width: 210mm;
   min-height: 297mm;
   background-color: #ffffff;
-  background-image: url('./background.jpg');
+  background-image: url('./background.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -492,7 +492,7 @@ body {
 .info-panel {
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.70);
   padding: 20px 20px 16px;
 }
 
