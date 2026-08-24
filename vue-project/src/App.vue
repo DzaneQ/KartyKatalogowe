@@ -480,7 +480,7 @@ body {
 .image-subtitle {
   flex-shrink: 0;
   padding: 12px 16px 14px;
-  background: rgba(255, 255, 255, 0.60);
+  background: rgba(255, 255, 255, 0.30);
   color: #000000;
   font-size: 44px;
   font-weight: 700;
