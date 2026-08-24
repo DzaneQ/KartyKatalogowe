@@ -10,14 +10,12 @@ interface ProductSpecRow {
 interface ProductData {
   logoText: string
   productName: string
-  subtitle: string
   specifications: ProductSpecRow[]
 }
 
 const defaultProduct: ProductData = {
   logoText: 'Logo',
   productName: 'Tytuł',
-  subtitle: 'Podtytuł',
   specifications: [],
 }
 
@@ -27,6 +25,11 @@ const logoPreview = ref<string | null>(null)
 const specImageUrls = ref<string[]>([])
 const certificateImageUrls = ref<string[]>([])
 const phoneNumbers = ref<string[]>([])
+const distributorCredentials = reactive({
+  companyName: '',
+  phoneNumbers: [] as Array<{ number: string }>,
+  emailAddress: '',
+})
 const currentRouteHasResource = ref(false)
 const specImageAssets = import.meta.glob(
   '/public/resources/*/specImg/*.{png,jpg,jpeg,webp,gif,avif}',
@@ -76,6 +79,29 @@ const loadPhoneNumbers = async () => {
   }
 }
 
+const loadDistributorCredentials = async () => {
+  try {
+    const response = await fetch('/resources/credentials.json')
+    if (!response.ok) {
+      return
+    }
+
+    const json = (await response.json()) as {
+      companyName?: string
+      phoneNumbers?: Array<{ number?: string }>
+      emailAddress?: string
+    }
+
+    distributorCredentials.companyName = typeof json.companyName === 'string' ? json.companyName : ''
+    distributorCredentials.phoneNumbers = Array.isArray(json.phoneNumbers)
+      ? json.phoneNumbers.filter((entry): entry is { number: string } => Boolean(entry && typeof entry.number === 'string'))
+      : []
+    distributorCredentials.emailAddress = typeof json.emailAddress === 'string' ? json.emailAddress : ''
+  } catch (error) {
+    console.error('Failed to load distributor credentials:', error)
+  }
+}
+
 const loadRouteProductData = async () => {
   const resourceFolder = resolveResourceFolder()
   if (!resourceFolder) {
@@ -112,6 +138,7 @@ onMounted(() => {
   currentRouteHasResource.value = Boolean(resourceFolder)
 
   loadPhoneNumbers()
+  loadDistributorCredentials()
 
   if (resourceFolder) {
     loadRouteProductData()
@@ -180,10 +207,6 @@ const applyProductData = (json: Record<string, unknown>) => {
     product.productName = json.productName
   }
 
-  if (typeof json.subtitle === 'string') {
-    product.subtitle = json.subtitle
-  }
-
   if ('specifications' in json) {
     const rows = normalizeSpecifications(json.specifications)
     if (rows.length > 0) {
@@ -236,23 +259,8 @@ const onLogoUpload = (event: Event) => {
       </section>
 
       <aside class="info-panel">
-        <header class="brand-header">
-          <label v-if="!currentRouteHasResource" class="upload-button upload-button-small">
-            Upload logo
-            <input type="file" accept="image/*" @change="onLogoUpload" />
-          </label>
-
-          <div v-if="logoPreview" class="logo-box logo-box-image">
-            <img :src="logoPreview" alt="Brand logo" />
-          </div>
-          <div v-else class="logo-box">
-            {{ product.logoText }}
-          </div>
-        </header>
-
         <div class="meta-block">
           <h1>{{ product.productName }}</h1>
-          <p class="subtitle">{{ product.subtitle }}</p>
         </div>
 
         <div v-if="specImageUrls.length" class="spec-image-row" aria-label="Product detail images">
@@ -290,16 +298,29 @@ const onLogoUpload = (event: Event) => {
           </div>
         </div>
 
-        <div v-if="phoneNumbers.length" class="contact-block" aria-label="Phone numbers">
-          <div class="contact-row">
-            <template v-for="phone in phoneNumbers" :key="phone">
-              <div class="contact-item">
-                <img src="/resources/phone_icon.png" alt="Phone icon" />
-                <span>{{ phone }}</span>
-              </div>
-            </template>
+        <footer class="distributor-footer" aria-label="Distributor credentials">
+          <div class="distributor-logo">
+            <img :src="logoPreview || '/resources/logo.jpg'" alt="Distributor logo" />
           </div>
-        </div>
+
+          <div class="distributor-details">
+            <div v-if="distributorCredentials.companyName" class="distributor-name">
+              {{ distributorCredentials.companyName }}
+            </div>
+
+            <div v-if="distributorCredentials.phoneNumbers.length" class="distributor-contact-list">
+              <div v-for="phone in distributorCredentials.phoneNumbers" :key="phone.number" class="distributor-contact-item">
+                <img src="/resources/phone_icon.png" alt="Phone icon" />
+                <span>{{ phone.number }}</span>
+              </div>
+            </div>
+
+            <div v-if="distributorCredentials.emailAddress" class="distributor-contact-item">
+              <img src="/resources/mail_icon.png" alt="Email icon" />
+              <span>{{ distributorCredentials.emailAddress }}</span>
+            </div>
+          </div>
+        </footer>
       </aside>
     </article>
   </main>
@@ -448,44 +469,79 @@ body {
   padding: 20px 20px 16px;
 }
 
-.brand-header {
+.distributor-footer {
+  margin-top: auto;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-bottom: 18px;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid #fc0008;
 }
 
-.logo-box {
-  flex: 1;
-  min-height: 72px;
+.distributor-logo {
+  width: 130px;
+  height: 68px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid #dfe7ee;
   display: grid;
   place-items: center;
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #0f172a;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  text-align: center;
-  padding: 8px 10px;
-}
-
-.logo-box-image {
   overflow: hidden;
-  padding: 0;
 }
 
-.logo-box-image img {
+.distributor-logo img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
+.distributor-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  text-align: right;
+}
+
+.distributor-name {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+
+.distributor-contact-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.distributor-contact-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  color: #0f172a;
+  font-family: "Segoe UI", "Arial Narrow", sans-serif;
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.distributor-contact-item img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .meta-block {
-  padding: 24px 0 12px;
+  padding: 24px 0 24px;
   border: double;
   background:white;
 }
@@ -508,19 +564,7 @@ h1 {
   font-weight: bold;
   font-style: italic;
   text-align: center;
-  color: #111827;
-}
-
-.subtitle {
-  margin: 8px 0 0;
-  color: #ff0000;
-  font-size: 26px;
-  font-style: italic;
-  line-height: 1.45;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-align: center;
-  text-transform: uppercase;
+  color: #f16b1d;
 }
 
 .spec-image-row {
@@ -636,14 +680,14 @@ th {
   width: 49%;
   color: #1f2937;
   font-weight: 700;
-  background: linear-gradient(180deg, #edf4fa 0%, #b9c1c9 100%);
+  background: linear-gradient(180deg, #ffc40a 0%, #fc0008 100%);
   border-right: 1px solid #dbe7f1;
   text-align: left;
 }
 
 td {
   width: 33.33%;
-  color: #334155;
+  color: #f16b1d;
   font-weight: 500;
   text-align: center;
   background: rgba(255, 255, 255, 0.85);
