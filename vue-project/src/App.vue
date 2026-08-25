@@ -119,7 +119,7 @@ const loadRouteProductData = async () => {
     const json = (await response.json()) as Record<string, unknown>
     applyProductData(json)
     imagePreview.value = `${resourceFolder}/preview.png`
-    logoPreview.value = '/resources/logo.jpg'
+    logoPreview.value = '/resources/logo.png'
     const resourcePath = `/public${resourceFolder}/specImg/`
     specImageUrls.value = Object.entries(specImageAssets)
       .filter(([path]) => path.startsWith(resourcePath))
@@ -269,6 +269,30 @@ const onLogoUpload = (event: Event) => {
       </section>
 
       <aside class="info-panel">
+        <footer class="distributor-footer" aria-label="Distributor credentials">
+          <div v-if="distributorCredentials.companyName" class="distributor-name">
+            {{ distributorCredentials.companyName }}
+          </div>
+
+          <div class="distributor-logo">
+            <img :src="logoPreview || '/resources/logo.png'" alt="Distributor logo" />
+          </div>
+
+          <div class="distributor-details">
+            <div v-if="distributorCredentials.phoneNumbers.length" class="distributor-contact-list">
+              <div v-for="phone in distributorCredentials.phoneNumbers" :key="phone.number" class="distributor-contact-item">
+                <img src="/resources/phone_icon.png" alt="Phone icon" />
+                <span>{{ phone.number }}</span>
+              </div>
+            </div>
+
+            <div v-if="distributorCredentials.emailAddress" class="distributor-contact-item">
+              <img src="/resources/mail_icon.png" alt="Email icon" />
+              <span>{{ distributorCredentials.emailAddress }}</span>
+            </div>
+          </div>
+        </footer>
+
         <div class="meta-block">
           <h1>{{ product.productName }}</h1>
         </div>
@@ -308,29 +332,6 @@ const onLogoUpload = (event: Event) => {
           </div>
         </div>
 
-        <footer class="distributor-footer" aria-label="Distributor credentials">
-          <div class="distributor-logo">
-            <img :src="logoPreview || '/resources/logo.jpg'" alt="Distributor logo" />
-          </div>
-
-          <div class="distributor-details">
-            <div v-if="distributorCredentials.companyName" class="distributor-name">
-              {{ distributorCredentials.companyName }}
-            </div>
-
-            <div v-if="distributorCredentials.phoneNumbers.length" class="distributor-contact-list">
-              <div v-for="phone in distributorCredentials.phoneNumbers" :key="phone.number" class="distributor-contact-item">
-                <img src="/resources/phone_icon.png" alt="Phone icon" />
-                <span>{{ phone.number }}</span>
-              </div>
-            </div>
-
-            <div v-if="distributorCredentials.emailAddress" class="distributor-contact-item">
-              <img src="/resources/mail_icon.png" alt="Email icon" />
-              <span>{{ distributorCredentials.emailAddress }}</span>
-            </div>
-          </div>
-        </footer>
       </aside>
     </article>
   </main>
@@ -497,24 +498,22 @@ body {
 }
 
 .distributor-footer {
-  margin-top: auto;
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   align-items: flex-end;
-  gap: 16px;
-  padding-top: 20px;
-  border-top: 1px solid #fc0008;
+  gap: 4px;
+  padding-bottom: 20px;
 }
 
 .distributor-logo {
-  width: 130px;
-  height: 68px;
+  width: 143px;
+  height: 65px;
   flex-shrink: 0;
-  background: #fff;
-  border: 1px solid #dfe7ee;
   display: grid;
   place-items: center;
   overflow: hidden;
+  transform: translateY(-5px);
 }
 
 .distributor-logo img {
@@ -533,12 +532,14 @@ body {
 }
 
 .distributor-name {
+  width: 100%;
   color: #111827;
-  font-size: 14px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1.25;
+  text-align: right;
 }
 
 .distributor-contact-list {
@@ -555,7 +556,7 @@ body {
   gap: 6px;
   color: #0f172a;
   font-family: "Segoe UI", "Arial Narrow", sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.2;
   letter-spacing: 0.02em;
 }
