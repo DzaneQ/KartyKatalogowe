@@ -16,16 +16,19 @@ interface ProductData {
 
 const defaultProduct: ProductData = {
   logoText: 'Logo',
-  productName: 'Tytuł',
+  productName: '',
   subtitle: '',
   specifications: [],
 }
 
 const product = reactive<ProductData>({ ...defaultProduct, specifications: [...defaultProduct.specifications] })
+const productData = ref<Record<string, unknown> | null>(null)
 const imagePreview = ref<string | null>(null)
 const logoPreview = ref<string | null>(null)
+const isTitleInputFocused = ref(false)
 const specImageUrls = ref<string[]>([])
 const certificateImageUrls = ref<string[]>([])
+const uploadedCertificateUrls = ref<string[]>([])
 const phoneNumbers = ref<string[]>([])
 const distributorCredentials = reactive({
   companyName: '',
@@ -41,10 +44,22 @@ const certificateImageAssets = import.meta.glob(
   '/public/resources/*/certificates/*.{png,jpg,jpeg,webp,gif,avif}',
   { eager: true, query: '?url', import: 'default' },
 ) as Record<string, string>
-const certificateImageRows = computed(() => [
-  certificateImageUrls.value.slice(0, 5),
-  certificateImageUrls.value.slice(5),
-].filter((row) => row.length > 0))
+const certificateImageRows = computed(() => {
+  const rows: string[][] = []
+
+  for (let index = 0; index < certificateImageUrls.value.length; index += 5) {
+    rows.push(certificateImageUrls.value.slice(index, index + 5))
+  }
+
+  return rows
+})
+const hasProductTitle = computed(() => product.productName.trim().length > 0)
+
+type DistributorCredentialsData = {
+  companyName?: string
+  phoneNumbers?: Array<{ number?: string }>
+  emailAddress?: string
+}
 
 const resolveResourceFolder = (): string | null => {
   if (typeof window === 'undefined') {
@@ -88,20 +103,18 @@ const loadDistributorCredentials = async () => {
       return
     }
 
-    const json = (await response.json()) as {
-      companyName?: string
-      phoneNumbers?: Array<{ number?: string }>
-      emailAddress?: string
-    }
-
-    distributorCredentials.companyName = typeof json.companyName === 'string' ? json.companyName : ''
-    distributorCredentials.phoneNumbers = Array.isArray(json.phoneNumbers)
-      ? json.phoneNumbers.filter((entry): entry is { number: string } => Boolean(entry && typeof entry.number === 'string'))
-      : []
-    distributorCredentials.emailAddress = typeof json.emailAddress === 'string' ? json.emailAddress : ''
+    applyDistributorCredentials((await response.json()) as DistributorCredentialsData)
   } catch (error) {
     console.error('Failed to load distributor credentials:', error)
   }
+}
+
+const applyDistributorCredentials = (json: DistributorCredentialsData) => {
+  distributorCredentials.companyName = typeof json.companyName === 'string' ? json.companyName : ''
+  distributorCredentials.phoneNumbers = Array.isArray(json.phoneNumbers)
+    ? json.phoneNumbers.filter((entry): entry is { number: string } => Boolean(entry && typeof entry.number === 'string'))
+    : []
+  distributorCredentials.emailAddress = typeof json.emailAddress === 'string' ? json.emailAddress : ''
 }
 
 const loadRouteProductData = async () => {
@@ -201,6 +214,8 @@ const normalizeSpecifications = (input: unknown): ProductSpecRow[] => {
 }
 
 const applyProductData = (json: Record<string, unknown>) => {
+  productData.value = json
+
   if (typeof json.logoText === 'string') {
     product.logoText = json.logoText
   }
@@ -209,8 +224,9 @@ const applyProductData = (json: Record<string, unknown>) => {
     product.productName = json.productName
   }
 
-  if (typeof json.subtitle === 'string') {
-    product.subtitle = json.subtitle
+  const subtitle = json.subtitle
+  if (typeof subtitle === 'string') {
+    product.subtitle = subtitle
   }
 
   if ('specifications' in json) {
@@ -242,6 +258,43 @@ const onLogoUpload = (event: Event) => {
   logoPreview.value = URL.createObjectURL(file)
 }
 
+const onCredentialsUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  try {
+    const json = JSON.parse(await file.text()) as DistributorCredentialsData
+    applyDistributorCredentials(json)
+  } catch (error) {
+    console.error('Failed to load credentials file:', error)
+  }
+}
+
+const onProductUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  try {
+    const json = JSON.parse(await file.text()) as Record<string, unknown>
+    applyProductData(json)
+    isTitleInputFocused.value = false
+  } catch (error) {
+    console.error('Failed to load product file:', error)
+  }
+}
+
+const onCertificateDirectoryUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const files = Array.from(target.files ?? []).filter((file) => file.type.startsWith('image/'))
+  if (!files.length) return
+
+  uploadedCertificateUrls.value.forEach((url) => URL.revokeObjectURL(url))
+  uploadedCertificateUrls.value = files.map((file) => URL.createObjectURL(file))
+  certificateImageUrls.value = [...uploadedCertificateUrls.value]
+}
+
 
 </script>
 
@@ -249,10 +302,28 @@ const onLogoUpload = (event: Event) => {
   <main class="page-shell">
     <article class="a4-card" aria-label="Product catalogue card template">
       <section class="image-panel">
-        <div v-if="!currentRouteHasResource" class="upload-top">
+        <div v-if="!currentRouteHasResource && !imagePreview" class="upload-top">
           <label class="upload-button">
-            Upload image
+            Załaduj obraz
             <input type="file" accept="image/*" @change="onImageUpload" />
+          </label>
+        </div>
+
+        <div v-if="!currentRouteHasResource" class="default-resource-inputs">
+          <label v-if="!productData" class="upload-button upload-button-small">
+            Wczytaj JSON produktu
+            <input type="file" accept=".json,application/json" @change="onProductUpload" />
+          </label>
+          <label v-if="!certificateImageUrls.length" class="upload-button upload-button-small">
+            Wczytaj certyfikaty
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              webkitdirectory
+              directory
+              @change="onCertificateDirectoryUpload"
+            />
           </label>
         </div>
 
@@ -294,7 +365,17 @@ const onLogoUpload = (event: Event) => {
         </footer>
 
         <div class="meta-block">
-          <h1>{{ product.productName }}</h1>
+          <input
+            v-if="!currentRouteHasResource && (!hasProductTitle || isTitleInputFocused)"
+            v-model="product.productName"
+            class="title-input"
+            type="text"
+            placeholder="Wpisz tytuł"
+            aria-label="Tytuł produktu"
+            @focus="isTitleInputFocused = true"
+            @keydown.enter.prevent="isTitleInputFocused = false"
+          />
+          <h1 v-else-if="hasProductTitle">{{ product.productName }}</h1>
         </div>
 
         <div v-if="specImageUrls.length" class="spec-image-row" aria-label="Product detail images">
@@ -398,6 +479,17 @@ body {
   top: 16px;
   left: 16px;
   z-index: 3;
+}
+
+.default-resource-inputs {
+  position: absolute;
+  top: 64px;
+  left: 16px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .upload-button {
@@ -574,6 +666,26 @@ body {
   background:white;
 }
 
+.title-input {
+  display: block;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #f16b1d;
+  font: inherit;
+  font-size: 34px;
+  font-style: italic;
+  font-weight: bold;
+  line-height: 1;
+  text-align: center;
+}
+
+.title-input::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
 .eyebrow {
   margin: 0 0 10px;
   color: #475569;
@@ -624,17 +736,20 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  width: 100%;
   max-width: 100%;
+  overflow: hidden;
 }
 
 .certificate-image-line:first-child {
-  width: 100%;
   justify-content: space-between;
 }
 
 .certificate-image-line img {
+  flex: 1 1 0;
   display: block;
-  width: auto;
+  width: 0;
+  min-width: 0;
   max-width: 100%;
   height: 58px;
   object-fit: contain;
