@@ -24,4 +24,3 @@ pnpm-debug.log*
 
 # Assets
 /public/resources/
-/src/fonts/
