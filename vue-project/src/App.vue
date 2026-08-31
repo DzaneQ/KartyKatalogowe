@@ -445,10 +445,6 @@ body {
   background: linear-gradient(135deg, #dfe6ec 0%, #bfc9d3 100%);
 }
 
-.page-shell {
-  padding: 24px;
-}
-
 .a4-card {
   width: 210mm;
   min-height: 297mm;
@@ -836,35 +832,25 @@ td {
   background: rgba(255, 255, 255, 0.85);
 }
 
-@media (max-width: 780px) {
-  .page-shell {
-    padding: 12px;
-  }
-
-  .a4-card {
-    width: min(100%, 210mm);
-    min-height: auto;
-    grid-template-columns: 1fr;
-  }
-
-  .image-panel {
-    min-height: 250px;
-  }
-
-  .image-frame,
-  .image-placeholder {
-    height: 260px;
-    flex: none;
-  }
-}
-
 @media print {
   @page {
     size: A4 portrait;
     margin: 0;
   }
 
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
   .page-shell {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
     padding: 0;
   }
 
@@ -872,9 +858,12 @@ td {
     width: 210mm;
     height: 297mm;
     min-height: 0;
-    grid-template-columns: 1.15fr 1fr;
+    margin: 0;
+    padding: 0;
     box-shadow: none;
     overflow: hidden;
+    page-break-after: avoid;
+    break-after: avoid;
   }
 
   .image-panel {
