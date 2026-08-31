@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import backgroundImage from './background.jpg'
 import "./fonts/fonts.css";
 
 interface ProductSpecRow {
@@ -301,6 +302,7 @@ const onCertificateDirectoryUpload = (event: Event) => {
 <template>
   <main class="page-shell">
     <article class="a4-card" aria-label="Product catalogue card template">
+      <img class="card-background" :src="backgroundImage" alt="" aria-hidden="true" />
       <section class="image-panel">
         <div v-if="!currentRouteHasResource && !imagePreview" class="upload-top">
           <label class="upload-button">
@@ -445,22 +447,36 @@ body {
   background: linear-gradient(135deg, #dfe6ec 0%, #bfc9d3 100%);
 }
 
+.page-shell {
+  padding: 24px;
+}
+
 .a4-card {
+  position: relative;
   width: 210mm;
   min-height: 297mm;
   background-color: #ffffff;
-  background-image: url('./background.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
-  overflow: hidden;
+  overflow: visible;
+}
+
+.card-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .image-panel {
   position: relative;
+  z-index: 1;
   background: transparent;
   padding: 0;
   display: flex;
@@ -579,6 +595,8 @@ body {
 }
 
 .info-panel {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   background: rgba(255, 255, 255, 0.85);
@@ -657,7 +675,7 @@ body {
 }
 
 .meta-block {
-  padding: 24px 0 24px;
+  padding: 18px 0 18px;
   border: double;
   background:white;
 }
@@ -832,6 +850,28 @@ td {
   background: rgba(255, 255, 255, 0.85);
 }
 
+@media (max-width: 780px) {
+  .page-shell {
+    padding: 12px;
+  }
+
+  .a4-card {
+    width: min(100%, 210mm);
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .image-panel {
+    min-height: 250px;
+  }
+
+  .image-frame,
+  .image-placeholder {
+    height: 260px;
+    flex: none;
+  }
+}
+
 @media print {
   @page {
     size: A4 portrait;
@@ -839,31 +879,39 @@ td {
   }
 
   html,
-  body {
+  body,
+  #app {
     width: 210mm;
+    min-height: 297mm;
     height: 297mm;
     margin: 0;
-    padding: 0;
-    overflow: hidden;
+    overflow: visible;
+    background: transparent;
+  }
+
+  body {
+    display: block;
+    place-items: initial;
   }
 
   .page-shell {
     width: 210mm;
+    min-height: 297mm;
     height: 297mm;
-    margin: 0;
     padding: 0;
+    margin: 0;
+    overflow: visible;
   }
 
   .a4-card {
     width: 210mm;
     height: 297mm;
-    min-height: 0;
     margin: 0;
-    padding: 0;
+    grid-template-columns: 1.15fr 1fr;
     box-shadow: none;
-    overflow: hidden;
-    page-break-after: avoid;
-    break-after: avoid;
+    overflow: visible;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .image-panel {
