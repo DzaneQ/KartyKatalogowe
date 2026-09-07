@@ -9,14 +9,12 @@ interface ProductSpecRow {
 }
 
 interface ProductData {
-  logoText: string
   productName: string
   subtitle: string
   specifications: ProductSpecRow[]
 }
 
 const defaultProduct: ProductData = {
-  logoText: 'Logo',
   productName: '',
   subtitle: '',
   specifications: [],
@@ -38,11 +36,11 @@ const distributorCredentials = reactive({
 })
 const currentRouteHasResource = ref(false)
 const specImageAssets = import.meta.glob(
-  '/public/resources/*/specImg/*.{png,jpg,jpeg,webp,gif,avif}',
+  '/public/resources/**/specImg/*.{png,jpg,jpeg,webp,gif,avif}',
   { eager: true, query: '?url', import: 'default' },
 ) as Record<string, string>
 const certificateImageAssets = import.meta.glob(
-  '/public/resources/*/certificates/*.{png,jpg,jpeg,webp,gif,avif}',
+  '/public/resources/**/certificates/*.{png,jpg,jpeg,webp,gif,avif}',
   { eager: true, query: '?url', import: 'default' },
 ) as Record<string, string>
 const certificateImageRows = computed(() => {
@@ -72,7 +70,7 @@ const resolveResourceFolder = (): string | null => {
     return null
   }
 
-  const folderMatch = pathname.match(/^\/resources\/[^/]+/)
+  const folderMatch = pathname.match(/^\/resources\/[^/]+\/[^/]+/)
   if (!folderMatch) {
     return null
   }
@@ -216,10 +214,6 @@ const normalizeSpecifications = (input: unknown): ProductSpecRow[] => {
 
 const applyProductData = (json: Record<string, unknown>) => {
   productData.value = json
-
-  if (typeof json.logoText === 'string') {
-    product.logoText = json.logoText
-  }
 
   if (typeof json.productName === 'string') {
     product.productName = json.productName
@@ -435,7 +429,7 @@ const onCertificateDirectoryUpload = (event: Event) => {
   box-sizing: border-box;
 }
 
-html, body, #app {
+html, body {
   margin: 0;
   min-height: 100%;
   min-height: 100vh;
@@ -879,8 +873,7 @@ td {
   }
 
   html,
-  body,
-  #app {
+  body {
     width: 210mm;
     min-height: 297mm;
     height: 297mm;
