@@ -42,6 +42,18 @@ const distributorCredentials = reactive({
   emailAddress: '',
 })
 const productsWithSpecifications = computed(() => products.value.filter((product) => product.specifications.length > 0))
+const productTitleLines = computed(() => {
+  const cleaned = productName.value.trim().split(/\s+/).filter(Boolean)
+
+  if (cleaned.length <= 2) {
+    return { firstLine: cleaned.join(' '), secondLine: '' }
+  }
+
+  return {
+    firstLine: cleaned.slice(0, 2).join(' '),
+    secondLine: cleaned.slice(2).join(' '),
+  }
+})
 const productSpecificationRows = computed(() => {
   const rows = new Map<string, ProductSpecRow>()
 
@@ -209,7 +221,10 @@ onMounted(() => {
         <section class="info-top-row">
           <div class="info-top-left">
             <header class="card-header">
-              <h1>{{ productName }}</h1>
+              <h1>
+                <span class="card-title-line card-title-line-first">{{ productTitleLines.firstLine }}</span>
+                <span v-if="productTitleLines.secondLine" class="card-title-line card-title-line-second">{{ productTitleLines.secondLine }}</span>
+              </h1>
             </header>
 
             <section v-if="specImageEntries.length" class="spec-image-row" aria-label="Product detail images">
@@ -334,7 +349,6 @@ body {
   height: 297mm;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
   overflow: visible;
 }
@@ -373,6 +387,7 @@ body {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
+  align-content: center;
   justify-items: center;
   margin: 0;
   background: transparent;
@@ -462,8 +477,20 @@ body {
   margin: 0;
   color: #f16b1d;
   font-size: 34px;
-  line-height: 1;
+  line-height: 1.4;
   font-style: italic;
+}
+
+.card-title-line {
+  display: block;
+}
+
+.card-title-line-first {
+  white-space: normal;
+}
+
+.card-title-line-second {
+  white-space: normal;
 }
 
 .info-bottom-row {
@@ -685,7 +712,7 @@ td {
     min-height: 297mm;
     height: 297mm;
     margin: 0;
-    overflow: visible;
+    overflow: hidden;
     background: transparent;
   }
 
@@ -701,7 +728,7 @@ td {
     height: 297mm;
     padding: 0;
     margin: 0;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .a4-card {
@@ -710,15 +737,18 @@ td {
     height: 297mm;
     margin: 0;
     box-shadow: none;
-    overflow: visible;
+    overflow: hidden;
     page-break-inside: avoid;
     break-inside: avoid;
+    page-break-after: avoid;
+    break-after: avoid;
   }
 
   .image-panel {
     flex: 0 0 45%;
     min-height: 170px;
     background: transparent;
+    overflow: hidden;
   }
 
   .product-gallery {
@@ -727,6 +757,7 @@ td {
     padding: 0;
     margin: 0;
     align-items: center;
+    align-content: center;
   }
 
   .info-bottom-row {
