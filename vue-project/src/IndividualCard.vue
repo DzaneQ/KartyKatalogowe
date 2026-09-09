@@ -449,7 +449,6 @@ body {
   position: relative;
   width: 210mm;
   min-height: 297mm;
-  background-color: #ffffff;
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);

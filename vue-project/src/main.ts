@@ -1,4 +1,7 @@
 import { createApp } from 'vue'
-import App from './App.vue'
+import CollectiveCard from './CollectiveCard.vue'
+import IndividualCard from './IndividualCard.vue'
 
-createApp(App).mount('#app')
+const isCollectiveResource = window.location.pathname.startsWith('/resources/collective/')
+
+createApp(isCollectiveResource ? CollectiveCard : IndividualCard).mount('#app')
