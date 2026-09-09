@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import backgroundImage from './background.jpg'
 import './fonts/fonts.css'
 
@@ -36,6 +36,11 @@ const products = ref<CollectiveProduct[]>([])
 const sharedSpecifications = ref<ProductSpecRow[]>([])
 const productName = ref('')
 const specImageEntries = ref<Array<{ url: string; isFire: boolean }>>([])
+const distributorCredentials = reactive({
+  companyName: '',
+  phoneNumbers: [] as Array<{ number: string }>,
+  emailAddress: '',
+})
 const productsWithSpecifications = computed(() => products.value.filter((product) => product.specifications.length > 0))
 const productSpecificationRows = computed(() => {
   const rows = new Map<string, ProductSpecRow>()
@@ -50,10 +55,7 @@ const productSpecificationRows = computed(() => {
 
   return [...rows.values()]
 })
-const companyName = ref('')
 const logoPreview = ref('/resources/logo.png')
-const emailAddress = ref('')
-const phoneNumbers = ref<string[]>([])
 
 const chemicalSubscripts: Record<string, string> = {
   '0': '₀',
@@ -107,20 +109,26 @@ const slugFromAssetPath = (path: string): string => {
 
 const displayName = (slug: string): string => slug.toUpperCase()
 
+type DistributorCredentialsData = {
+  companyName?: string
+  phoneNumbers?: Array<{ number?: string }>
+  emailAddress?: string
+}
+
+const applyDistributorCredentials = (json: DistributorCredentialsData) => {
+  distributorCredentials.companyName = typeof json.companyName === 'string' ? json.companyName : ''
+  distributorCredentials.phoneNumbers = Array.isArray(json.phoneNumbers)
+    ? json.phoneNumbers.filter((entry): entry is { number: string } => Boolean(entry && typeof entry.number === 'string'))
+    : []
+  distributorCredentials.emailAddress = typeof json.emailAddress === 'string' ? json.emailAddress : ''
+}
+
 const loadCredentials = async () => {
   try {
     const response = await fetch('/resources/credentials.json')
     if (!response.ok) return
-    const json = await response.json() as {
-      companyName?: string
-      phoneNumbers?: Array<{ number?: string }>
-      emailAddress?: string
-    }
-    companyName.value = typeof json.companyName === 'string' ? json.companyName : ''
-    phoneNumbers.value = Array.isArray(json.phoneNumbers)
-      ? json.phoneNumbers.flatMap((entry) => typeof entry?.number === 'string' ? [entry.number] : [])
-      : []
-    emailAddress.value = typeof json.emailAddress === 'string' ? json.emailAddress : ''
+
+    applyDistributorCredentials((await response.json()) as DistributorCredentialsData)
   } catch (error) {
     console.error('Failed to load distributor credentials:', error)
   }
@@ -197,29 +205,49 @@ onMounted(() => {
     <article class="a4-card" aria-label="Collective product catalogue card">
       <img class="card-background" :src="backgroundImage" alt="" aria-hidden="true" />
 
-      <section class="image-panel">
-        <section class="product-gallery" aria-label="Products">
-          <article v-for="product in products" :key="product.slug" class="gallery-item">
-            <img :src="product.imageUrl" :alt="product.productName" />
-          </article>
-        </section>
-      </section>
-
       <aside class="info-panel">
         <section class="info-top-row">
-          <header class="card-header">
-            <h1>{{ productName }}</h1>
-          </header>
+          <div class="info-top-left">
+            <header class="card-header">
+              <h1>{{ productName }}</h1>
+            </header>
 
-          <section v-if="specImageEntries.length" class="spec-image-row" aria-label="Product detail images">
-            <img
-              v-for="entry in specImageEntries"
-              :key="entry.url"
-              :src="entry.url"
-              :class="entry.isFire ? 'fire-spec-image' : 'non-fire-spec-image'"
-              alt=""
-            />
-          </section>
+            <section v-if="specImageEntries.length" class="spec-image-row" aria-label="Product detail images">
+              <img
+                v-for="entry in specImageEntries"
+                :key="entry.url"
+                :src="entry.url"
+                :class="entry.isFire ? 'fire-spec-image' : 'non-fire-spec-image'"
+                alt=""
+              />
+            </section>
+          </div>
+
+          <footer class="distributor-footer" aria-label="Distributor credentials">
+            <div v-if="distributorCredentials.companyName" class="distributor-name">
+              {{ distributorCredentials.companyName }}
+            </div>
+
+            <div class="distributor-footer-row">
+              <div class="distributor-logo">
+                <img :src="logoPreview || '/resources/logo.png'" alt="Distributor logo" />
+              </div>
+
+              <div class="distributor-details">
+                <div v-if="distributorCredentials.phoneNumbers.length" class="distributor-contact-list">
+                  <div v-for="phone in distributorCredentials.phoneNumbers" :key="phone.number" class="distributor-contact-item">
+                    <img src="/resources/phone_icon.png" alt="Phone icon" />
+                    <span>{{ phone.number }}</span>
+                  </div>
+                </div>
+
+                <div v-if="distributorCredentials.emailAddress" class="distributor-contact-item">
+                  <img src="/resources/mail_icon.png" alt="Email icon" />
+                  <span>{{ distributorCredentials.emailAddress }}</span>
+                </div>
+              </div>
+            </div>
+          </footer>
         </section>
 
         <section class="info-bottom-row">
@@ -247,35 +275,17 @@ onMounted(() => {
                 </tr>
               </tbody>
             </table>
-
-            <footer class="distributor-footer" aria-label="Distributor credentials">
-              <div v-if="companyName" class="distributor-name">
-                {{ companyName }}
-              </div>
-
-              <div class="distributor-footer-row">
-                <div class="distributor-logo">
-                  <img :src="logoPreview || '/resources/logo.png'" alt="Distributor logo" />
-                </div>
-
-                <div class="distributor-details">
-                  <div v-if="phoneNumbers.length" class="distributor-contact-list">
-                    <div v-for="phone in phoneNumbers" :key="phone" class="distributor-contact-item">
-                      <img src="/resources/phone_icon.png" alt="Phone icon" />
-                      <span>{{ phone }}</span>
-                    </div>
-                  </div>
-
-                  <div v-if="emailAddress" class="distributor-contact-item">
-                    <img src="/resources/mail_icon.png" alt="Email icon" />
-                    <span>{{ emailAddress }}</span>
-                  </div>
-                </div>
-              </div>
-            </footer>
           </section>
         </section>
       </aside>
+
+      <section class="image-panel">
+        <section class="product-gallery" aria-label="Products">
+          <article v-for="product in products" :key="product.slug" class="gallery-item">
+            <img :src="product.imageUrl" :alt="product.productName" />
+          </article>
+        </section>
+      </section>
     </article>
   </main>
 </template>
@@ -395,7 +405,8 @@ body {
 .spec-image-row {
   position: relative;
   z-index: 1;
-  width: 20%;
+  width: 100%;
+  display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
@@ -428,9 +439,14 @@ body {
 
 .info-top-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   width: 100%;
+}
+
+.info-top-left {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .card-header {
@@ -529,17 +545,21 @@ td {
   color: #f16b1d;
   font-weight: 500;
   text-align: center;
-  background: rgba(255, 255, 255, 0.85);
+  background: #fff;
 }
 
 .distributor-footer {
+  width: 45%;
+  flex: 0 0 45%;
+  min-width: 180px;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
   gap: 4px;
   padding-top: 10px;
-  margin-top: auto;
+  margin-top: 0;
   border-top: 0;
 }
 
@@ -552,6 +572,14 @@ td {
   text-transform: uppercase;
   line-height: 1.25;
   text-align: right;
+}
+
+.distributor-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
 }
 
 .distributor-logo {
@@ -720,7 +748,8 @@ td {
 
   .distributor-footer {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex-direction: column;
     justify-content: flex-end;
     align-items: flex-end;
     gap: 4px;
@@ -743,10 +772,10 @@ td {
 
   .distributor-footer-row {
     display: flex;
-    width: 100%;
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
+    width: 100%;
   }
 
   .distributor-logo {

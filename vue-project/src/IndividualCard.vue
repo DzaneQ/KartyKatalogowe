@@ -806,7 +806,6 @@ h1 {
 .table-wrap {
   border: 1px solid #dfe7ee;
   overflow: hidden;
-  background: #fff;
 }
 
 table {
@@ -840,7 +839,7 @@ td {
   color: #f16b1d;
   font-weight: 500;
   text-align: center;
-  background: rgba(255, 255, 255, 0.85);
+  background: #fff;
 }
 
 @media (max-width: 780px) {
