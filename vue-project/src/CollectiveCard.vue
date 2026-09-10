@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import backgroundImage from './background.jpg'
 import './fonts/fonts.css'
 
@@ -35,6 +35,8 @@ const specImageAssets = import.meta.glob(
 ) as Record<string, string>
 
 const products = ref<CollectiveProduct[]>([])
+const galleryImageElements = new Map<string, HTMLImageElement>()
+const galleryTranslateX = ref<Record<string, number>>({})
 const sharedSpecifications = ref<ProductSpecRow[]>([])
 const productName = ref('')
 const specImageEntries = ref<Array<{ url: string; isFire: boolean }>>([])
@@ -99,8 +101,58 @@ const parseHeightMmFromSpecifications = (rows: ProductSpecRow[]): number | undef
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
+const setGalleryImageRef = (slug: string, element: unknown) => {
+  if (element instanceof HTMLImageElement) {
+    galleryImageElements.set(slug, element)
+  } else {
+    galleryImageElements.delete(slug)
+  }
+}
+
+const updateGalleryTranslations = () => {
+  const centerIndex = (products.value.length - 1) / 2
+  const translations: Record<string, number> = {}
+
+  const ownTranslation = (product: CollectiveProduct, index: number): number => {
+    const image = galleryImageElements.get(product.slug)
+    const scale = 1.5 * (product.galleryScale ?? 1)
+
+    if (!image || !image.offsetWidth) return 0
+
+    const widthBefore = image.offsetWidth
+    const widthAfter = widthBefore * scale
+    const halfWidthDifference = (widthBefore - widthAfter) / 2
+    const direction = index < centerIndex ? 1 : -1
+
+    return halfWidthDifference * direction
+  }
+
+  for (let index = Math.floor(centerIndex) - 1; index >= 0; index -= 1) {
+    const product = products.value[index]
+    const closerProduct = products.value[index + 1]
+    if (!product || !closerProduct) continue
+
+    translations[product.slug] = ownTranslation(product, index) + (translations[closerProduct.slug] ?? 0)
+  }
+
+  for (let index = Math.ceil(centerIndex) + 1; index < products.value.length; index += 1) {
+    const product = products.value[index]
+    const closerProduct = products.value[index - 1]
+    if (!product || !closerProduct) continue
+
+    translations[product.slug] = ownTranslation(product, index) + (translations[closerProduct.slug] ?? 0)
+  }
+
+  const centerProduct = products.value[Math.floor(centerIndex)]
+  if (centerProduct && products.value.length % 2 === 1) {
+    translations[centerProduct.slug] = 0
+  }
+
+  galleryTranslateX.value = translations
+}
+
 const galleryImageStyle = (product: CollectiveProduct): Record<string, string> => ({
-  transform: `scale(${1.5 * (product.galleryScale ?? 1)})`,
+  transform: `translateX(${galleryTranslateX.value[product.slug] ?? 0}px) scale(${1.5 * (product.galleryScale ?? 1)})`,
   transformOrigin: 'center center',
 })
 
@@ -203,6 +255,9 @@ const loadProducts = async () => {
       galleryScale: product.heightMm ? product.heightMm / maxHeight : 1,
     }))
     .sort((first, second) => first.order - second.order)
+
+  await nextTick()
+  updateGalleryTranslations()
 }
 
 const loadSharedSpecifications = async () => {
@@ -252,7 +307,9 @@ onMounted(() => {
             class="gallery-item"
             :src="product.imageUrl"
             :alt="product.productName"
+            :ref="(element) => setGalleryImageRef(product.slug, element)"
             :style="galleryImageStyle(product)"
+            @load="updateGalleryTranslations"
           />
         </section>
       </section>
