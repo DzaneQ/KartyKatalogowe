@@ -13,6 +13,8 @@ interface CollectiveProduct {
   productName: string
   specifications: ProductSpecRow[]
   imageUrl: string
+  heightMm?: number
+  galleryScale?: number
 }
 
 type ProductJson = {
@@ -85,6 +87,22 @@ const chemicalSubscripts: Record<string, string> = {
 const formatChemicalValue = (value: string): string => value.replace(/_([0-9]+)/g, (_, digits: string) =>
   digits.split('').map((digit) => chemicalSubscripts[digit] ?? digit).join(''),
 )
+
+const parseHeightMmFromSpecifications = (rows: ProductSpecRow[]): number | undefined => {
+  const heightRow = rows.find((row) => row.key.trim().toLowerCase() === 'całkowita wysokość')
+  if (!heightRow) return undefined
+
+  const match = heightRow.value.match(/[0-9]+(?:[.,][0-9]+)?/)
+  if (!match) return undefined
+
+  const parsed = Number.parseFloat(match[0].replace(',', '.'))
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
+const galleryImageStyle = (product: CollectiveProduct): Record<string, string> => ({
+  transform: `scale(${1.5 * (product.galleryScale ?? 1)})`,
+  transformOrigin: 'center center',
+})
 
 const normalizeSpecifications = (input: unknown): ProductSpecRow[] => {
   if (Array.isArray(input)) {
@@ -165,16 +183,25 @@ const loadProducts = async () => {
       console.error(`Failed to load product ${slug}:`, error)
     }
 
+    const specifications = normalizeSpecifications(json.specifications ?? json.details)
+
     return {
       slug,
       productName: json.productName ?? json.name ?? displayName(slug),
-      specifications: normalizeSpecifications(json.specifications ?? json.details),
+      specifications,
       imageUrl,
       order: typeof json.order === 'number' ? json.order : Number.MAX_SAFE_INTEGER,
+      heightMm: parseHeightMmFromSpecifications(specifications),
     }
   }))
 
+  const maxHeight = Math.max(...productData.map((product) => product.heightMm ?? 0)) || 1
+
   products.value = productData
+    .map((product) => ({
+      ...product,
+      galleryScale: product.heightMm ? product.heightMm / maxHeight : 1,
+    }))
     .sort((first, second) => first.order - second.order)
 }
 
@@ -216,6 +243,14 @@ onMounted(() => {
   <main class="page-shell">
     <article class="a4-card" aria-label="Collective product catalogue card">
       <img class="card-background" :src="backgroundImage" alt="" aria-hidden="true" />
+
+      <section class="image-panel">
+        <section class="product-gallery" aria-label="Products">
+          <article v-for="product in products" :key="product.slug" class="gallery-item">
+            <img :src="product.imageUrl" :alt="product.productName" :style="galleryImageStyle(product)" />
+          </article>
+        </section>
+      </section>
 
       <aside class="info-panel">
         <section class="info-top-row">
@@ -281,7 +316,7 @@ onMounted(() => {
           </section>
 
           <section v-if="sharedSpecifications.length" class="shared-section">
-            <p class="section-label">Ogólne Informacje techniczne:</p>
+            <p class="section-label">Ogólne informacje techniczne:</p>
             <table class="shared-table">
               <tbody>
                 <tr v-for="row in sharedSpecifications" :key="row.key">
@@ -293,14 +328,6 @@ onMounted(() => {
           </section>
         </section>
       </aside>
-
-      <section class="image-panel">
-        <section class="product-gallery" aria-label="Products">
-          <article v-for="product in products" :key="product.slug" class="gallery-item">
-            <img :src="product.imageUrl" :alt="product.productName" />
-          </article>
-        </section>
-      </section>
     </article>
   </main>
 </template>
@@ -389,6 +416,7 @@ body {
   align-items: center;
   align-content: center;
   justify-items: center;
+  gap: 12px;
   margin: 0;
   background: transparent;
   border-bottom: 0;
@@ -412,9 +440,11 @@ body {
   display: block;
   width: auto;
   max-width: 100%;
+  max-height: 100%;
   padding: 0;
   object-fit: contain;
   mix-blend-mode: multiply;
+  margin: 0;
 }
 
 .spec-image-row {
@@ -467,7 +497,7 @@ body {
 .card-header {
   display: block;
   width: 100%;
-  padding: 18px 0 18px;
+  padding: 8px 0 8px;
   border: double;
   background: #fff;
   text-align: center;
@@ -502,8 +532,6 @@ body {
 
 .product-specifications,
 .shared-section {
-  margin-top: 7px;
-  padding: 6px 0 7px;
   background: transparent;
   border: 0;
 }
@@ -517,7 +545,7 @@ body {
 }
 
 .section-label {
-  margin: 16px 0 10px;
+  margin: 0 0 10px;
   color: #111827;
   font-size: 23px;
   font-weight: 800;
@@ -551,7 +579,7 @@ tr + tr {
 }
 
 th, td {
-  padding: 6px 6px;
+  padding: 5px 5px;
   text-align: left;
   vertical-align: middle;
   font-size: 14px;
