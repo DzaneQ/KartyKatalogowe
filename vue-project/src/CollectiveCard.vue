@@ -112,8 +112,9 @@ const setGalleryImageRef = (slug: string, element: unknown) => {
 const updateGalleryTranslations = () => {
   const centerIndex = (products.value.length - 1) / 2
   const translations: Record<string, number> = {}
+  const widthDifferences: Record<string, number> = {}
 
-  const ownTranslation = (product: CollectiveProduct, index: number): number => {
+  const widthDifference = (product: CollectiveProduct): number => {
     const image = galleryImageElements.get(product.slug)
     const scale = 1.5 * (product.galleryScale ?? 1)
 
@@ -121,7 +122,15 @@ const updateGalleryTranslations = () => {
 
     const widthBefore = image.offsetWidth
     const widthAfter = widthBefore * scale
-    const halfWidthDifference = (widthBefore - widthAfter) / 2
+    return widthBefore - widthAfter
+  }
+
+  products.value.forEach((product) => {
+    widthDifferences[product.slug] = widthDifference(product)
+  })
+
+  const ownTranslation = (product: CollectiveProduct, index: number): number => {
+    const halfWidthDifference = (widthDifferences[product.slug] ?? 0) / 2
     const direction = index < centerIndex ? 1 : -1
 
     return halfWidthDifference * direction
@@ -147,6 +156,20 @@ const updateGalleryTranslations = () => {
   if (centerProduct && products.value.length % 2 === 1) {
     translations[centerProduct.slug] = 0
   }
+
+  const leftHalfEnd = Math.floor(centerIndex)
+  const rightHalfStart = Math.ceil(centerIndex) + 1
+  const leftWidthDifference = products.value
+    .slice(0, leftHalfEnd)
+    .reduce((sum, product) => sum + (widthDifferences[product.slug] ?? 0), 0)
+  const rightWidthDifference = products.value
+    .slice(rightHalfStart)
+    .reduce((sum, product) => sum + (widthDifferences[product.slug] ?? 0), 0)
+  const galleryShift = (rightWidthDifference - leftWidthDifference) / 2
+
+  products.value.forEach((product) => {
+    translations[product.slug] = (translations[product.slug] ?? 0) + galleryShift
+  })
 
   galleryTranslateX.value = translations
 }
