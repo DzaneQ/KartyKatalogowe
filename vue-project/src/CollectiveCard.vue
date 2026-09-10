@@ -246,9 +246,14 @@ onMounted(() => {
 
       <section class="image-panel">
         <section class="product-gallery" aria-label="Products">
-          <article v-for="product in products" :key="product.slug" class="gallery-item">
-            <img :src="product.imageUrl" :alt="product.productName" :style="galleryImageStyle(product)" />
-          </article>
+          <img
+            v-for="product in products"
+            :key="product.slug"
+            class="gallery-item"
+            :src="product.imageUrl"
+            :alt="product.productName"
+            :style="galleryImageStyle(product)"
+          />
         </section>
       </section>
 
@@ -423,20 +428,6 @@ body {
 }
 
 .gallery-item {
-  min-width: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #111827;
-  font-family: "Segoe UI", sans-serif;
-  font-size: 8px;
-  line-height: 1.1;
-  text-align: center;
-}
-
-.gallery-item img {
   display: block;
   width: auto;
   max-width: 100%;
@@ -445,6 +436,11 @@ body {
   object-fit: contain;
   mix-blend-mode: multiply;
   margin: 0;
+  color: #111827;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 8px;
+  line-height: 1.1;
+  text-align: center;
 }
 
 .spec-image-row {
