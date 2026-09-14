@@ -842,28 +842,6 @@ td {
   background: #fff;
 }
 
-@media (max-width: 780px) {
-  .page-shell {
-    padding: 12px;
-  }
-
-  .a4-card {
-    width: min(100%, 210mm);
-    min-height: auto;
-    grid-template-columns: 1fr;
-  }
-
-  .image-panel {
-    min-height: 250px;
-  }
-
-  .image-frame,
-  .image-placeholder {
-    height: 260px;
-    flex: none;
-  }
-}
-
 @media print {
   @page {
     size: A4 portrait;

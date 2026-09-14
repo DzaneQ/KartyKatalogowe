@@ -432,23 +432,12 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
-html,
 body {
   margin: 0;
-  min-height: 100%;
-  min-height: 100vh;
-}
-
-body {
-  display: grid;
-  place-items: center;
   background: linear-gradient(135deg, #dfe6ec 0%, #bfc9d3 100%);
 }
 
 .page-shell {
-  width: 210mm;
-  min-height: 297mm;
-  height: 297mm;
   padding: 0;
   margin: 0;
   overflow: visible;
@@ -457,7 +446,6 @@ body {
 .a4-card {
   position: relative;
   width: 210mm;
-  min-height: 297mm;
   height: 297mm;
   display: flex;
   flex-direction: column;
@@ -465,68 +453,25 @@ body {
   overflow: visible;
 }
 
-.card-background {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  z-index: 0;
-  pointer-events: none;
-}
-
 .image-panel {
-  position: relative;
-  z-index: 1;
   flex: 0 0 45%;
-  width: 100%;
   min-height: 170px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 0;
-  padding: 0;
-  background: transparent;
-  overflow: hidden;
 }
 
 .product-gallery {
-  width: 100%;
-  height: 100%;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
-  align-content: center;
-  justify-items: center;
   gap: 12px;
-  margin: 0;
-  background: transparent;
-  border-bottom: 0;
 }
 
 .gallery-item {
-  display: block;
-  width: auto;
   max-width: 100%;
   max-height: 100%;
-  padding: 0;
-  object-fit: contain;
-  mix-blend-mode: multiply;
-  margin: 0;
-  color: #111827;
-  font-family: "Segoe UI", sans-serif;
-  font-size: 8px;
-  line-height: 1.1;
-  text-align: center;
 }
 
 .spec-image-row {
-  position: relative;
-  z-index: 1;
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -560,23 +505,17 @@ body {
 
 .info-top-row {
   display: flex;
-  align-items: flex-start;
   gap: 12px;
-  width: 100%;
 }
 
 .info-top-left {
   flex: 1 1 auto;
-  min-width: 0;
 }
 
 .card-header {
-  display: block;
-  width: 100%;
   padding: 8px 0 8px;
   border: double;
   background: #fff;
-  text-align: center;
 }
 
 .card-header h1 {
@@ -589,27 +528,12 @@ body {
 
 .card-title-line {
   display: block;
-}
-
-.card-title-line-first {
-  white-space: normal;
-}
-
-.card-title-line-second {
   white-space: normal;
 }
 
 .info-bottom-row {
   display: flex;
-  align-items: stretch;
   gap: 12px;
-  width: 100%;
-}
-
-.product-specifications,
-.shared-section {
-  background: transparent;
-  border: 0;
 }
 
 .product-specifications {
@@ -622,83 +546,44 @@ body {
 
 .section-label {
   margin: 0 0 10px;
-  color: #111827;
   font-size: 23px;
   font-weight: 800;
   letter-spacing: 0.02em;
-  text-transform: none;
 }
 
 .product-table,
 .shared-table {
-  width: 100%;
   table-layout: fixed;
-  border-collapse: collapse;
-  font-family: "Oswald Bold", "Arial Narrow", sans-serif;
-  font-size: 8px;
-  line-height: 1.12;
-}
-
-.table-wrap {
-  border: 1px solid #dfe7ee;
-  overflow: hidden;
-  background: #fff;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-tr + tr {
-  border-top: 1px solid #e2e8f0;
 }
 
 th, td {
   padding: 5px 5px;
-  text-align: left;
-  vertical-align: middle;
-  font-size: 14px;
-  line-height: 1.35;
 }
 
 th {
   width: 49%;
-  color: #1f2937;
-  font-weight: 700;
   background: linear-gradient(180deg, #ffc40a 0%, #fc0008 100%);
   border-right: 1px solid #dbe7f1;
-  text-align: left;
 }
 
 td {
   width: 33.33%;
   color: #f16b1d;
-  font-weight: 500;
   text-align: center;
   background: #fff;
 }
 
 .distributor-footer {
   width: 45%;
-  flex: 0 0 45%;
-  min-width: 180px;
   display: flex;
-  flex-wrap: nowrap;
   flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-end;
   gap: 4px;
   padding-top: 10px;
-  margin-top: 0;
-  border-top: 0;
+  padding-bottom: 20px;
 }
 
 .distributor-name {
-  width: 100%;
-  color: #111827;
   font-size: 26px;
-  font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1.25;
@@ -710,16 +595,11 @@ td {
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  width: 100%;
 }
 
 .distributor-logo {
   width: 143px;
   height: 65px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
   transform: translateY(-5px);
 }
 
@@ -733,15 +613,12 @@ td {
 .distributor-details {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 6px;
-  text-align: right;
 }
 
 .distributor-contact-list {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 4px;
 }
 
@@ -750,7 +627,6 @@ td {
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  color: #0f172a;
   font-family: "Segoe UI", "Arial Narrow", sans-serif;
   font-size: 15px;
   line-height: 1.2;
@@ -761,46 +637,6 @@ td {
   width: 16px;
   height: 16px;
   object-fit: contain;
-  flex-shrink: 0;
-}
-
-@media (max-width: 780px) {
-  .page-shell {
-    width: 100%;
-    min-height: auto;
-    height: auto;
-    padding: 12px;
-  }
-
-  .a4-card {
-    width: min(100%, 210mm);
-    min-height: auto;
-    height: auto;
-  }
-
-  .image-panel {
-    min-height: auto;
-    height: auto;
-    flex-basis: auto;
-  }
-
-  .product-gallery {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .product-specifications {
-    width: 100%;
-  }
-
-  .distributor-footer {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .footer-contacts {
-    align-items: flex-start;
-    text-align: left;
-  }
 }
 
 @media print {
@@ -813,160 +649,14 @@ td {
   html,
   body {
     width: 210mm;
-    min-height: 297mm;
     height: 297mm;
     margin: 0;
     overflow: hidden;
     background: transparent;
-  }
-
-  body {
-    display: block;
-    place-items: initial;
-    background: transparent;
-  }
-
-  .page-shell {
-    width: 210mm;
-    min-height: 297mm;
-    height: 297mm;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
   }
 
   .a4-card {
-    width: 210mm;
-    min-height: 297mm;
-    height: 297mm;
-    margin: 0;
-    box-shadow: none;
     overflow: hidden;
-    page-break-inside: avoid;
-    break-inside: avoid;
-    page-break-after: avoid;
-    break-after: avoid;
-  }
-
-  .image-panel {
-    flex: 0 0 45%;
-    min-height: 170px;
-    background: transparent;
-    overflow: hidden;
-  }
-
-  .product-gallery {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 4px;
-    padding: 0;
-    margin: 0;
-    align-items: center;
-    align-content: center;
-  }
-
-  .info-bottom-row {
-    display: flex;
-    width: 100%;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .product-specifications {
-    width: 55%;
-    flex: 0 0 55%;
-  }
-
-  .shared-section {
-    width: 45%;
-    flex: 0 0 45%;
-  }
-
-  .distributor-footer {
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-end;
-    gap: 4px;
-    padding-bottom: 10px;
-    margin-top: auto;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  .distributor-name {
-    width: 100%;
-    color: #111827;
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    line-height: 1.25;
-    text-align: right;
-  }
-
-  .distributor-footer-row {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .distributor-logo {
-    width: 143px;
-    height: 65px;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    transform: translateY(-5px);
-  }
-
-  .distributor-logo img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .distributor-details {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-    text-align: right;
-  }
-
-  .distributor-contact-list {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-  }
-
-  .distributor-contact-item {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 6px;
-    color: #0f172a;
-    font-family: "Segoe UI", "Arial Narrow", sans-serif;
-    font-size: 15px;
-    line-height: 1.2;
-    letter-spacing: 0.02em;
-  }
-
-  .distributor-contact-item img {
-    width: 16px;
-    height: 16px;
-    object-fit: contain;
-    flex-shrink: 0;
-  }
-
-  .info-panel {
-    background: rgba(255, 255, 255, 0.88);
-    flex: 1 1 auto;
   }
 }
 </style>
