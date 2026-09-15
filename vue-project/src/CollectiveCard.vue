@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import backgroundImage from './background.jpg'
 import './fonts/fonts.css'
+import './common.css'
 
 interface ProductSpecRow {
   key: string
@@ -418,41 +419,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
-:root {
-  font-family: "Oswald Bold", "Arial Narrow", sans-serif;
-  color: #111827;
-  background: #e5e7eb;
-  line-height: 1.4;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  place-items: center;
-  background: linear-gradient(135deg, #dfe6ec 0%, #bfc9d3 100%);
-}
-
 .a4-card {
-  position: relative;
-  width: 210mm;
-  height: 297mm;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
-  overflow: visible;
-}
-
-.card-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
 }
 
 .image-panel {
@@ -497,12 +466,9 @@ body {
 
 .info-panel {
   position: relative;
-  z-index: 1;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.88);
-  padding: 20px 20px 16px;
 }
 
 .info-top-row {
@@ -516,16 +482,10 @@ body {
 
 .card-header {
   padding: 8px 0 8px;
-  border: double;
-  background: #fff;
 }
 
 .card-header h1 {
-  margin: 0;
-  color: #f16b1d;
-  font-size: 34px;
   line-height: 1.4;
-  font-style: italic;
 }
 
 .card-title-line {
@@ -562,19 +522,6 @@ th, td {
   padding: 5px 5px;
 }
 
-th {
-  width: 49%;
-  background: linear-gradient(180deg, #ffc40a 0%, #fc0008 100%);
-  border-right: 1px solid #dbe7f1;
-}
-
-td {
-  width: 33.33%;
-  color: #f16b1d;
-  text-align: center;
-  background: #fff;
-}
-
 .distributor-footer {
   width: 45%;
   display: flex;
@@ -584,14 +531,6 @@ td {
   padding-bottom: 20px;
 }
 
-.distributor-name {
-  font-size: 26px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 1.25;
-  text-align: right;
-}
-
 .distributor-footer-row {
   display: flex;
   align-items: center;
@@ -599,56 +538,7 @@ td {
   gap: 10px;
 }
 
-.distributor-logo {
-  width: 143px;
-  height: 65px;
-  transform: translateY(-5px);
-}
-
-.distributor-logo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.distributor-details {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  text-align: right;
-}
-
-.distributor-contact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.distributor-contact-item {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  color: #0f172a;
-  font-family: "Segoe UI", "Arial Narrow", sans-serif;
-  font-size: 15px;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-}
-
-.distributor-contact-item img {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
-}
-
 @media print {
-  @page {
-    size: A4 portrait;
-    margin: 0;
-  }
-
   .a4-card {
     overflow: hidden;
   }

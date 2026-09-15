@@ -2,6 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import backgroundImage from './background.jpg'
 import "./fonts/fonts.css";
+import './common.css'
 
 interface ProductSpecRow {
   key: string
@@ -360,7 +361,7 @@ const onCertificateDirectoryUpload = (event: Event) => {
           </div>
         </footer>
 
-        <div class="meta-block">
+        <div class="card-header">
           <input
             v-if="!currentRouteHasResource && (!hasProductTitle || isTitleInputFocused)"
             v-model="product.productName"
@@ -415,47 +416,9 @@ const onCertificateDirectoryUpload = (event: Event) => {
 </template>
 
 <style>
-:root {
-  font-family: "Oswald Bold", "Arial Narrow", sans-serif;
-  color: #111827;
-  background: #e5e7eb;
-  line-height: 1.4;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  min-height: 100%;
-  min-height: 100vh;
-}
-
-body {
-  place-items: center;
-  background: linear-gradient(135deg, #dfe6ec 0%, #bfc9d3 100%);
-}
-
 .a4-card {
-  position: relative;
-  width: 210mm;
-  min-height: 297mm;
   display: grid;
   grid-template-columns: 1.15fr 1fr;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
-  overflow: visible;
-}
-
-.card-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
 }
 
 .image-panel {
@@ -544,8 +507,6 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.85);
-  padding: 20px 20px 16px;
 }
 
 .distributor-footer {
@@ -557,65 +518,8 @@ body {
   padding-bottom: 20px;
 }
 
-.distributor-logo {
-  width: 143px;
-  height: 65px;
-  display: grid;
-  place-items: center;
-  transform: translateY(-5px);
-}
-
-.distributor-logo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.distributor-details {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  text-align: right;
-}
-
-.distributor-name {
-  font-size: 26px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 1.25;
-  text-align: right;
-}
-
-.distributor-contact-list {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-.distributor-contact-item {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  color: #0f172a;
-  font-family: "Segoe UI", "Arial Narrow", sans-serif;
-  font-size: 15px;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-}
-
-.distributor-contact-item img {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
-}
-
-.meta-block {
+.card-header {
   padding: 18px 0 18px;
-  border: double;
-  background:white;
 }
 
 .title-input {
@@ -638,14 +542,7 @@ body {
 }
 
 h1 {
-  margin: 0;
-  font-size: 34px;
   line-height: 1;
-  letter-spacing: -0.02em;
-  font-weight: bold;
-  font-style: italic;
-  text-align: center;
-  color: #f16b1d;
 }
 
 .spec-image-row {
@@ -693,7 +590,6 @@ h1 {
   margin: 16px 0 10px;
   color: #111827;
   font-size: 23px;
-  font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: none;
 }
@@ -703,42 +599,17 @@ h1 {
   overflow: hidden;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-tr + tr {
-  border-top: 1px solid #e2e8f0;
-}
-
 th, td {
   padding: 3px 8px;
-  text-align: left;
-  vertical-align: middle;
-  font-size: 14px;
   line-height: 1.35;
 }
 
 th {
   width: 49%;
-  color: #1f2937;
-  background: linear-gradient(180deg, #ffc40a 0%, #fc0008 100%);
-  border-right: 1px solid #dbe7f1;
-  text-align: left;
 }
 
 td {
   width: 33.33%;
-  color: #f16b1d;
-  text-align: center;
-  background: #fff;
 }
 
-@media print {
-  @page {
-    size: A4 portrait;
-    margin: 0;
-  }
-}
 </style>
