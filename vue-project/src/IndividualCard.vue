@@ -306,11 +306,11 @@ const onCertificateDirectoryUpload = (event: Event) => {
         </div>
 
         <div v-if="!currentRouteHasResource" class="default-resource-inputs">
-          <label v-if="!productData" class="upload-button upload-button-small">
+          <label v-if="!productData" class="upload-button">
             Wczytaj JSON produktu
             <input type="file" accept=".json,application/json" @change="onProductUpload" />
           </label>
-          <label v-if="!certificateImageUrls.length" class="upload-button upload-button-small">
+          <label v-if="!certificateImageUrls.length" class="upload-button">
             Wczytaj certyfikaty
             <input
               type="file"
@@ -436,13 +436,8 @@ html, body {
 }
 
 body {
-  display: grid;
   place-items: center;
   background: linear-gradient(135deg, #dfe6ec 0%, #bfc9d3 100%);
-}
-
-.page-shell {
-  padding: 24px;
 }
 
 .a4-card {
@@ -457,40 +452,29 @@ body {
 
 .card-background {
   position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  display: block;
-  z-index: 0;
   pointer-events: none;
 }
 
 .image-panel {
   position: relative;
-  z-index: 1;
-  background: transparent;
   padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: stretch;
-  min-height: 100%;
 }
 
 .upload-top {
   position: absolute;
   top: 16px;
   left: 16px;
-  z-index: 3;
 }
 
 .default-resource-inputs {
   position: absolute;
   top: 64px;
   left: 16px;
-  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -501,19 +485,15 @@ body {
   position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 38px;
   padding: 10px 16px;
   border-radius: 999px;
   border: 1px solid #0f172a;
   background: rgba(255, 255, 255, 0.92);
   color: #0f172a;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 12px;;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .upload-button:hover {
@@ -528,41 +508,17 @@ body {
   cursor: pointer;
 }
 
-.upload-button-small {
-  min-height: 32px;
-  padding: 8px 12px;
-  font-size: 10px;
-  letter-spacing: 0.06em;
-}
-
-.accent {
-  background: #111827;
-  color: #f8fafc;
-  border-color: #111827;
-}
-
 .image-frame,
 .image-placeholder {
-  width: 100%;
   flex: 1;
-  min-height: 0;
   display: grid;
   place-items: center;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-}
-
-.image-frame {
-  overflow: hidden;
-  background: transparent;
 }
 
 .image-frame img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  display: block;
   transform: scale(1.12);
   transform-origin: center center;
 }
@@ -570,18 +526,15 @@ body {
 .image-placeholder {
   color: #475569;
   font-size: 22px;
-  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .image-subtitle {
-  flex-shrink: 0;
   padding: 12px 16px 14px;
   background: rgba(255, 255, 255, 0.60);
   color: #000000;
   font-size: 44px;
-  font-weight: 700;
   line-height: 1.25;
   text-align: center;
   white-space: pre-line;
@@ -589,7 +542,6 @@ body {
 
 .info-panel {
   position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   background: rgba(255, 255, 255, 0.85);
@@ -608,10 +560,8 @@ body {
 .distributor-logo {
   width: 143px;
   height: 65px;
-  flex-shrink: 0;
   display: grid;
   place-items: center;
-  overflow: hidden;
   transform: translateY(-5px);
 }
 
@@ -625,16 +575,12 @@ body {
 .distributor-details {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 6px;
   text-align: right;
 }
 
 .distributor-name {
-  width: 100%;
-  color: #111827;
   font-size: 26px;
-  font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1.25;
@@ -664,7 +610,6 @@ body {
   width: 16px;
   height: 16px;
   object-fit: contain;
-  flex-shrink: 0;
 }
 
 .meta-block {
@@ -684,23 +629,12 @@ body {
   font-size: 34px;
   font-style: italic;
   font-weight: bold;
-  line-height: 1;
   text-align: center;
 }
 
 .title-input::placeholder {
   color: #94a3b8;
   opacity: 1;
-}
-
-.eyebrow {
-  margin: 0 0 10px;
-  color: #475569;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.92);
 }
 
 h1 {
@@ -716,7 +650,6 @@ h1 {
 
 .spec-image-row {
   display: flex;
-  align-items: center;
   justify-content: center;
   gap: 8px;
   margin-top: 20px;
@@ -748,16 +681,10 @@ h1 {
   overflow: hidden;
 }
 
-.certificate-image-line:first-child {
-  justify-content: space-between;
-}
-
 .certificate-image-line img {
   flex: 1 1 0;
   display: block;
   width: 0;
-  min-width: 0;
-  max-width: 100%;
   height: 58px;
   object-fit: contain;
 }
@@ -769,38 +696,6 @@ h1 {
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: none;
-}
-
-.contact-block {
-  margin: 8px 0 12px;
-  padding: 8px 4px;
-}
-
-.contact-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.contact-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: #0f172a;
-  font-family: "Segoe UI", "Arial Narrow", sans-serif;
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 1.2;
-  letter-spacing: 0.04em;
-}
-
-.contact-block img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  flex-shrink: 0;
 }
 
 .table-wrap {
@@ -828,7 +723,6 @@ th, td {
 th {
   width: 49%;
   color: #1f2937;
-  font-weight: 700;
   background: linear-gradient(180deg, #ffc40a 0%, #fc0008 100%);
   border-right: 1px solid #dbe7f1;
   text-align: left;
@@ -837,7 +731,6 @@ th {
 td {
   width: 33.33%;
   color: #f16b1d;
-  font-weight: 500;
   text-align: center;
   background: #fff;
 }
@@ -846,61 +739,6 @@ td {
   @page {
     size: A4 portrait;
     margin: 0;
-  }
-
-  html,
-  body {
-    width: 210mm;
-    min-height: 297mm;
-    height: 297mm;
-    margin: 0;
-    overflow: visible;
-    background: transparent;
-  }
-
-  body {
-    display: block;
-    place-items: initial;
-  }
-
-  .page-shell {
-    width: 210mm;
-    min-height: 297mm;
-    height: 297mm;
-    padding: 0;
-    margin: 0;
-    overflow: visible;
-  }
-
-  .a4-card {
-    width: 210mm;
-    height: 297mm;
-    margin: 0;
-    grid-template-columns: 1.15fr 1fr;
-    box-shadow: none;
-    overflow: visible;
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-
-  .image-panel {
-    min-height: 0;
-    height: 100%;
-  }
-
-  .image-frame,
-  .image-placeholder {
-    flex: 1 1 auto;
-    min-height: 0;
-    height: auto;
-  }
-
-  .image-frame img {
-    transform: none;
-  }
-
-  .image-subtitle {
-    flex: 0 0 auto;
   }
 }
 </style>

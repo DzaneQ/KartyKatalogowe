@@ -433,14 +433,8 @@ onMounted(() => {
 }
 
 body {
-  margin: 0;
+  place-items: center;
   background: linear-gradient(135deg, #dfe6ec 0%, #bfc9d3 100%);
-}
-
-.page-shell {
-  padding: 0;
-  margin: 0;
-  overflow: visible;
 }
 
 .a4-card {
@@ -451,6 +445,14 @@ body {
   flex-direction: column;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
   overflow: visible;
+}
+
+.card-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
 }
 
 .image-panel {
@@ -614,6 +616,7 @@ td {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  text-align: right;
 }
 
 .distributor-contact-list {
@@ -627,6 +630,7 @@ td {
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
+  color: #0f172a;
   font-family: "Segoe UI", "Arial Narrow", sans-serif;
   font-size: 15px;
   line-height: 1.2;
@@ -643,16 +647,6 @@ td {
   @page {
     size: A4 portrait;
     margin: 0;
-  }
-
-  :root,
-  html,
-  body {
-    width: 210mm;
-    height: 297mm;
-    margin: 0;
-    overflow: hidden;
-    background: transparent;
   }
 
   .a4-card {
