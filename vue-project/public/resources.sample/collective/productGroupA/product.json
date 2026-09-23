@@ -1,0 +1,7 @@
+{
+  "productName": "Nazwa grupy produktów",
+  "specifications": [
+    { "key": "Wspólna właściwość A", "value": "Wspólny parametr A" },
+    { "key": "Wspólna właściwość B", "value": "Wspólna parametr C" }
+  ]
+}

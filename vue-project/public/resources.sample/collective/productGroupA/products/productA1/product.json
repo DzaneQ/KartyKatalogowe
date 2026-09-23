@@ -1,0 +1,7 @@
+{
+  "order": 1,
+  "specifications": [
+    { "key": "Właściwość A", "value": "productA1" },
+    { "key": "Właściwość B", "value": "A1" }
+  ]
+}

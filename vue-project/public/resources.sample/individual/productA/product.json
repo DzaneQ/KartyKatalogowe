@@ -1,0 +1,8 @@
+{
+  "productName": "Tytuł",
+  "subtitle": "Podtytuł",
+  "specifications": [
+    { "key": "Pierwsze", "value": "1" },
+    { "key": "Drugie", "value": "2" }
+  ]
+}

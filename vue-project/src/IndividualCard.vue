@@ -29,7 +29,6 @@ const isTitleInputFocused = ref(false)
 const specImageUrls = ref<string[]>([])
 const certificateImageUrls = ref<string[]>([])
 const uploadedCertificateUrls = ref<string[]>([])
-const phoneNumbers = ref<string[]>([])
 const distributorCredentials = reactive({
   companyName: '',
   phoneNumbers: [] as Array<{ number: string }>,
@@ -77,23 +76,6 @@ const resolveResourceFolder = (): string | null => {
   }
 
   return folderMatch[0]
-}
-
-const loadPhoneNumbers = async () => {
-  try {
-    const response = await fetch('/resources/phone_numbers.txt')
-    if (!response.ok) {
-      return
-    }
-
-    const text = await response.text()
-    phoneNumbers.value = text
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-  } catch (error) {
-    console.error('Failed to load phone numbers:', error)
-  }
 }
 
 const loadDistributorCredentials = async () => {
@@ -152,7 +134,6 @@ onMounted(() => {
   const resourceFolder = resolveResourceFolder()
   currentRouteHasResource.value = Boolean(resourceFolder)
 
-  loadPhoneNumbers()
   loadDistributorCredentials()
 
   if (resourceFolder) {
@@ -482,7 +463,6 @@ const onCertificateDirectoryUpload = (event: Event) => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: scale(1.12);
   transform-origin: center center;
 }
 
